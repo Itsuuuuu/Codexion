@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 16:18:55 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/05 15:27:16 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/07 23:22:06 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	swap_nodes(t_heap_node *a, t_heap_node *b)
 	*b = temp;
 }
 
-static void	sift_up(t_heap *heap, int index)
+void	sift_up(t_heap *heap, int index)
 {
 	int	parent;
 
@@ -37,7 +37,7 @@ heap->nodes[parent].coder_id)))
 	}
 }
 
-static void	sift_down(t_heap *heap, int index)
+void	sift_down(t_heap *heap, int index)
 {
 	int	min;
 	int	left;

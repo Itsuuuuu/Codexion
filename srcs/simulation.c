@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 12:17:33 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/05 15:41:13 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/08 00:05:18 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static int	execute_compile(t_coder *coder, t_data *data)
 		return (0);
 	}
 	pthread_mutex_lock(&data->sim_mutex);
+	coder->last_compile_start = get_time_ms();
 	coder->compiles_count++;
 	pthread_mutex_unlock(&data->sim_mutex);
 	print_status(coder, "is compiling");
@@ -46,26 +47,8 @@ static int	execute_compile(t_coder *coder, t_data *data)
 	return (1);
 }
 
-static int	wait_if_done(t_coder *coder, t_data *data)
+static int	do_compile_phase(t_coder *coder, t_data *data)
 {
-	if (data->compiles_required > 0
-		&& coder->compiles_count >= data->compiles_required)
-	{
-		while (!check_sim_over(data))
-			usleep(1000);
-		return (1);
-	}
-	return (0);
-}
-
-static int	coder_cycle(t_coder *coder, t_data *data)
-{
-	if (check_sim_over(data))
-		return (0);
-	print_status(coder, "is refactoring");
-	ft_usleep(data->time_to_refactor, data);
-	if (wait_if_done(coder, data))
-		return (0);
 	pthread_mutex_lock(&data->sim_mutex);
 	coder->last_compile_start = get_time_ms();
 	pthread_mutex_unlock(&data->sim_mutex);
@@ -81,6 +64,25 @@ static int	coder_cycle(t_coder *coder, t_data *data)
 	return (1);
 }
 
+static int	coder_cycle(t_coder *coder, t_data *data)
+{
+	if (check_sim_over(data))
+		return (0);
+	if (data->compiles_required > 0
+		&& coder->compiles_count >= data->compiles_required)
+		return (0);
+	if (data->nb_coders == 1)
+		return (usleep(1000), 1);
+	print_status(coder, "is refactoring");
+	ft_usleep(data->time_to_refactor, data);
+	if (check_sim_over(data))
+		return (0);
+	if (data->compiles_required > 0
+		&& coder->compiles_count >= data->compiles_required)
+		return (0);
+	return (do_compile_phase(coder, data));
+}
+
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
@@ -90,12 +92,13 @@ void	*coder_routine(void *arg)
 	data = coder->data;
 	if (coder->id % 2 == 0)
 		ft_usleep(data->time_to_compile / 2, data);
-	if (wait_if_done(coder, data))
-		return (NULL);
 	while (1)
 	{
 		if (!coder_cycle(coder, data))
-			return (NULL);
+			break ;
 	}
+	pthread_mutex_lock(&data->sim_mutex);
+	data->threads_done++;
+	pthread_mutex_unlock(&data->sim_mutex);
 	return (NULL);
 }

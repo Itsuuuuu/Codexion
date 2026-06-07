@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:27:15 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/05 15:29:11 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/07 23:33:06 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,14 @@ void	clean_simulation(t_data *data)
 
 	if (data->dongles)
 	{
-		i = -1;
-		while (++i < data->nb_coders)
+		i = 0;
+		while (i < data->nb_coders)
 		{
 			pthread_mutex_destroy(&data->dongles[i].mutex);
 			pthread_cond_destroy(&data->dongles[i].cond);
 			if (data->dongles[i].heap.nodes)
 				free(data->dongles[i].heap.nodes);
+			i++;
 		}
 		free(data->dongles);
 	}

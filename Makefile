@@ -8,7 +8,8 @@ SRCS        = $(SRCS_DIR)/main.c \
               $(SRCS_DIR)/simulation.c \
               $(SRCS_DIR)/dongles.c \
               $(SRCS_DIR)/utils.c \
-              $(SRCS_DIR)/heap.c
+              $(SRCS_DIR)/heap.c \
+			  $(SRCS_DIR)/supervisor.c 
 
 OBJS        = $(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 15:42:01 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/05 15:28:37 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/05 16:35:56 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	ft_usleep(long long time_in_ms, t_data *data)
 	{
 		if (check_sim_over(data))
 			return ;
-		usleep(5000);
+		usleep(500);
 	}
 }
 
