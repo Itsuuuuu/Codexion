@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 12:17:33 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/08 00:05:18 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/08 21:55:02 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,16 @@ static int	coder_cycle(t_coder *coder, t_data *data)
 		return (0);
 	if (data->nb_coders == 1)
 		return (usleep(1000), 1);
-	print_status(coder, "is refactoring");
-	ft_usleep(data->time_to_refactor, data);
+	if (!do_compile_phase(coder, data))
+		return (0);
 	if (check_sim_over(data))
 		return (0);
 	if (data->compiles_required > 0
 		&& coder->compiles_count >= data->compiles_required)
 		return (0);
-	return (do_compile_phase(coder, data));
+	print_status(coder, "is refactoring");
+	ft_usleep(data->time_to_refactor, data);
+	return (1);
 }
 
 void	*coder_routine(void *arg)

@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 19:17:38 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/08 00:02:30 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:12:26 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,14 @@ long long priority)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	heap_push(&dongle->heap, coder->id, priority);
-	while (1)
+	while (!(dongle->is_available
+			&& dongle->heap.nodes[0].coder_id == coder->id
+			&& get_time_ms() >= dongle->cooldown_end))
 	{
 		if (check_sim_over(coder->data))
 		{
 			heap_remove(&dongle->heap, coder->id);
 			return (pthread_mutex_unlock(&dongle->mutex), 0);
-		}
-		if (dongle->is_available && dongle->heap.nodes[0].coder_id == coder->id)
-		{
-			if (get_time_ms() >= dongle->cooldown_end)
-				break ;
 		}
 		pthread_mutex_unlock(&dongle->mutex);
 		usleep(500);
@@ -84,7 +81,10 @@ void	acquire_dongles(t_coder *coder)
 		heap_remove(&first->heap, coder->id);
 		first->is_available = 1;
 		pthread_mutex_unlock(&first->mutex);
+		return ;
 	}
+	print_status(coder, "has taken a dongle");
+	print_status(coder, "has taken a dongle");
 }
 
 void	release_dongles(t_coder *coder)
