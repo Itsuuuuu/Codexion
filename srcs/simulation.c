@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 12:17:33 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 11:14:32 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 11:32:44 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,6 @@ static int	execute_compile(t_coder *coder, t_data *data)
 
 static int	do_compile_phase(t_coder *coder, t_data *data)
 {
-	pthread_mutex_lock(&data->sim_mutex);
-	coder->last_compile_start = get_time_ms();
-	pthread_mutex_unlock(&data->sim_mutex);
 	acquire_dongles(coder);
 	if (check_sim_over(coder->data))
 		return (0);
