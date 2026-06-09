@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 10:02:32 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/07 22:40:52 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 12:16:35 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "codexion.h"
 
 #include "codexion.h"
 

@@ -1,7 +1,7 @@
 NAME        = codexion
 CC          = cc
-# CFLAGS      = -Wall -Wextra -Werror -I includes -pthread
-CFLAGS		= -Wall -Wextra -Werror -I includes -fsanitize=thread -g
+CFLAGS      = -Wall -Wextra -Werror -I includes -pthread
+# CFLAGS		= -Wall -Wextra -Werror -I includes -fsanitize=thread -g
 
 SRCS_DIR    = srcs
 SRCS        = $(SRCS_DIR)/main.c \
