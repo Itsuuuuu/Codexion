@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 12:17:33 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/08 21:55:02 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 11:14:32 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ int	check_burnout(t_data *data, int i)
 		> data->time_to_burnout)
 	{
 		data->simulation_over = 1;
-		pthread_mutex_unlock(&data->sim_mutex);
-		print_status(&data->coders[i], "burned out");
 		return (1);
 	}
 	return (0);
@@ -73,16 +71,14 @@ static int	coder_cycle(t_coder *coder, t_data *data)
 		return (0);
 	if (data->nb_coders == 1)
 		return (usleep(1000), 1);
-	if (!do_compile_phase(coder, data))
-		return (0);
+	print_status(coder, "is refactoring");
+	ft_usleep(data->time_to_refactor, data);
 	if (check_sim_over(data))
 		return (0);
 	if (data->compiles_required > 0
 		&& coder->compiles_count >= data->compiles_required)
 		return (0);
-	print_status(coder, "is refactoring");
-	ft_usleep(data->time_to_refactor, data);
-	return (1);
+	return (do_compile_phase(coder, data));
 }
 
 void	*coder_routine(void *arg)

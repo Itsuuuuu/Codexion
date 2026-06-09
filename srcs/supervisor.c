@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 22:39:48 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/07 23:16:32 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 11:13:39 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,39 +30,36 @@ static int	launch_threads(t_data *data)
 	return (1);
 }
 
-void	supervisor_loop(t_data *data)
-{
-	int	i;
-
-	while (1)
-	{
-		pthread_mutex_lock(&data->sim_mutex);
-		if (data->threads_done >= data->nb_coders)
-		{
-			pthread_mutex_unlock(&data->sim_mutex);
-			return ;
-		}
-		i = 0;
-		while (i < data->nb_coders)
-		{
-			if (check_burnout(data, i++))
-			{
-				pthread_mutex_unlock(&data->sim_mutex);
-				return ;
-			}
-		}
-		pthread_mutex_unlock(&data->sim_mutex);
-		usleep(1000);
-	}
-}
-
-static void	join_threads(t_data *data)
+static int	check_all_burnouts(t_data *data)
 {
 	int	i;
 
 	i = 0;
 	while (i < data->nb_coders)
-		pthread_join(data->coders[i++].thread_id, NULL);
+	{
+		if (check_burnout(data, i))
+		{
+			pthread_mutex_unlock(&data->sim_mutex);
+			print_status(&data->coders[i], "burned out");
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+void	supervisor_loop(t_data *data)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&data->sim_mutex);
+		if (data->threads_done >= data->nb_coders)
+			return (pthread_mutex_unlock(&data->sim_mutex), (void)0);
+		if (check_all_burnouts(data))
+			return ;
+		pthread_mutex_unlock(&data->sim_mutex);
+		usleep(1000);
+	}
 }
 
 int	start_simulation(t_data *data)
@@ -82,7 +79,9 @@ int	start_simulation(t_data *data)
 		pthread_cond_broadcast(&data->dongles[i].cond);
 		pthread_mutex_unlock(&data->dongles[i++].mutex);
 	}
-	join_threads(data);
+	i = 0;
+	while (i < data->nb_coders)
+		pthread_join(data->coders[i++].thread_id, NULL);
 	return (1);
 }
 
