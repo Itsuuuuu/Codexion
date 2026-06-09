@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   supervisor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
+/*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 22:39:48 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 11:13:39 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:03:58 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,7 @@ static int	check_all_burnouts(t_data *data)
 	while (i < data->nb_coders)
 	{
 		if (check_burnout(data, i))
-		{
-			pthread_mutex_unlock(&data->sim_mutex);
-			print_status(&data->coders[i], "burned out");
 			return (1);
-		}
 		i++;
 	}
 	return (0);

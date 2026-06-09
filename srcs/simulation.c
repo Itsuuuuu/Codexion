@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 12:17:33 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 12:16:52 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:07:07 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,10 @@ static int	do_compile_phase(t_coder *coder, t_data *data)
 	pthread_mutex_unlock(&data->sim_mutex);
 	acquire_dongles(coder);
 	if (check_sim_over(coder->data))
+	{
+		release_dongles(coder);
 		return (0);
+	}
 	if (!execute_compile(coder, data))
 		return (0);
 	if (data->scheduler_type == EDF)

@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 19:17:38 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 12:17:25 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:09:47 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ static long long	get_priority(t_coder *coder)
 	return (p);
 }
 
-static int	acquire_single_dongle(t_dongle *dongle, t_coder *coder, \
-long long priority)
+static int	acquire_single_dongle(t_dongle *dongle, t_coder *coder,
+				long long priority)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	heap_push(&dongle->heap, coder->id, priority);
@@ -48,8 +48,8 @@ long long priority)
 	return (1);
 }
 
-static void	get_dongle_order(t_coder *coder, t_dongle **first, \
-t_dongle **second)
+static void	get_dongle_order(t_coder *coder, t_dongle **first,
+				t_dongle **second)
 {
 	if (coder->left_dongle->id < coder->right_dongle->id)
 	{
@@ -75,6 +75,7 @@ void	acquire_dongles(t_coder *coder)
 	get_dongle_order(coder, &first, &second);
 	if (!acquire_single_dongle(first, coder, priority))
 		return ;
+	print_status(coder, "has taken a dongle");
 	if (!acquire_single_dongle(second, coder, priority))
 	{
 		pthread_mutex_lock(&first->mutex);
@@ -83,7 +84,6 @@ void	acquire_dongles(t_coder *coder)
 		pthread_mutex_unlock(&first->mutex);
 		return ;
 	}
-	print_status(coder, "has taken a dongle");
 	print_status(coder, "has taken a dongle");
 }
 
