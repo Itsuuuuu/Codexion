@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 15:42:01 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 12:17:09 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:51:14 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ void	unlock_dongle(t_dongle *dongle, t_data *data)
 	dongle->is_available = 1;
 	if (data->dongle_cooldown > 0)
 		dongle->cooldown_end = get_time_ms() + data->dongle_cooldown;
-	heap_pop(&dongle->heap);
 	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }

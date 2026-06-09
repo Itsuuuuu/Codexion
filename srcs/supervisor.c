@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   supervisor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 22:39:48 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 14:03:58 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:55:53 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,11 @@ static int	check_all_burnouts(t_data *data)
 	while (i < data->nb_coders)
 	{
 		if (check_burnout(data, i))
+		{
+			pthread_mutex_unlock(&data->sim_mutex);
+			print_status(&data->coders[i], "burned out");
 			return (1);
+		}
 		i++;
 	}
 	return (0);
@@ -73,7 +77,8 @@ int	start_simulation(t_data *data)
 	{
 		pthread_mutex_lock(&data->dongles[i].mutex);
 		pthread_cond_broadcast(&data->dongles[i].cond);
-		pthread_mutex_unlock(&data->dongles[i++].mutex);
+		pthread_mutex_unlock(&data->dongles[i].mutex);
+		i++;
 	}
 	i = 0;
 	while (i < data->nb_coders)
@@ -90,10 +95,10 @@ void	heap_remove(t_heap *heap, int coder_id)
 	{
 		if (heap->nodes[i].coder_id == coder_id)
 		{
-			heap->nodes[i] = heap->nodes[heap->size - 1];
 			heap->size--;
 			if (i < heap->size)
 			{
+				heap->nodes[i] = heap->nodes[heap->size];
 				sift_up(heap, i);
 				sift_down(heap, i);
 			}

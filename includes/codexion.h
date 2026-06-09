@@ -6,7 +6,7 @@
 /*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:11:57 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/07 23:39:02 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 22:04:44 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,13 +105,11 @@ void		*coder_routine(void *arg);
 /* dongles.c*/
 void		acquire_dongles(t_coder *coder);
 void		release_dongles(t_coder *coder);
-void		heap_remove(t_heap *heap, int coder_id);
 
 //main.c
 int			parse_arguments(t_data *data, int ac, char **av);
 void		clean_simulation(t_data *data);
 
-void		heap_pop(t_heap *heap);
 void		heap_remove(t_heap *heap, int coder_id);
 void		sift_up(t_heap *heap, int index);
 void		sift_down(t_heap *heap, int index);

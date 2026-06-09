@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dongles.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: guifouqu <guifouqu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: guifouqu <guifouqu@student.42lehavre.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 19:17:38 by guifouqu          #+#    #+#             */
-/*   Updated: 2026/06/09 14:09:47 by guifouqu         ###   ########.fr       */
+/*   Updated: 2026/06/09 23:16:09 by guifouqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,9 @@ static long long	get_priority(t_coder *coder)
 	return (p);
 }
 
-static int	acquire_single_dongle(t_dongle *dongle, t_coder *coder,
-				long long priority)
+static int	wait_for_dongle(t_dongle *dongle, t_coder *coder)
 {
 	pthread_mutex_lock(&dongle->mutex);
-	heap_push(&dongle->heap, coder->id, priority);
 	while (!(dongle->is_available
 			&& dongle->heap.nodes[0].coder_id == coder->id
 			&& get_time_ms() >= dongle->cooldown_end))
@@ -48,38 +46,46 @@ static int	acquire_single_dongle(t_dongle *dongle, t_coder *coder,
 	return (1);
 }
 
-static void	get_dongle_order(t_coder *coder, t_dongle **first,
-				t_dongle **second)
+static void	prepare_dongles(t_coder *coder, t_dongle **f, t_dongle **s,
+				long long p)
 {
 	if (coder->left_dongle->id < coder->right_dongle->id)
 	{
-		*first = coder->left_dongle;
-		*second = coder->right_dongle;
+		*f = coder->left_dongle;
+		*s = coder->right_dongle;
 	}
 	else
 	{
-		*first = coder->right_dongle;
-		*second = coder->left_dongle;
+		*f = coder->right_dongle;
+		*s = coder->left_dongle;
 	}
+	pthread_mutex_lock(&(*f)->mutex);
+	heap_push(&(*f)->heap, coder->id, p);
+	pthread_mutex_unlock(&(*f)->mutex);
+	pthread_mutex_lock(&(*s)->mutex);
+	heap_push(&(*s)->heap, coder->id, p);
+	pthread_mutex_unlock(&(*s)->mutex);
 }
 
 void	acquire_dongles(t_coder *coder)
 {
 	t_dongle	*first;
 	t_dongle	*second;
-	long long	priority;
 
 	if (coder->data->nb_coders == 1)
 		return ;
-	priority = get_priority(coder);
-	get_dongle_order(coder, &first, &second);
-	if (!acquire_single_dongle(first, coder, priority))
+	prepare_dongles(coder, &first, &second, get_priority(coder));
+	if (!wait_for_dongle(first, coder))
+	{
+		pthread_mutex_lock(&second->mutex);
+		heap_remove(&second->heap, coder->id);
+		pthread_mutex_unlock(&second->mutex);
 		return ;
+	}
 	print_status(coder, "has taken a dongle");
-	if (!acquire_single_dongle(second, coder, priority))
+	if (!wait_for_dongle(second, coder))
 	{
 		pthread_mutex_lock(&first->mutex);
-		heap_remove(&first->heap, coder->id);
 		first->is_available = 1;
 		pthread_mutex_unlock(&first->mutex);
 		return ;
